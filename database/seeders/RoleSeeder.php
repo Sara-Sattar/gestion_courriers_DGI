@@ -9,9 +9,19 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
+        // Ancien profil « Direction Régionale » → « Accueil » (guichet d'enregistrement).
+        Role::query()
+            ->where('name', 'Direction Régionale')
+            ->update([
+                'name' => 'Accueil',
+                'description' => 'Guichet d\'accueil — enregistrement et orientation des courriers',
+            ]);
+
         $roles = [
             ['name' => 'Admin', 'description' => 'Gère les utilisateurs, rôles, catégories, types de courrier, unités administratives et paramètres'],
-            ['name' => 'Direction Régionale', 'description' => 'Gère une direction régionale'],
+            ['name' => 'Accueil', 'description' => 'Guichet d\'accueil — enregistrement et orientation des courriers'],
+            ['name' => 'Traitement', 'description' => 'Profil CDC — traitement des courriers'],
+            ['name' => 'Consultation', 'description' => 'Profil CDC — consultation et statistiques'],
             ['name' => 'Service', 'description' => 'Gère un service'],
             ['name' => 'Brigade', 'description' => 'Gère une brigade'],
             ['name' => 'Bureau', 'description' => 'Gère un bureau'],
@@ -20,7 +30,10 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            Role::firstOrCreate($role);
+            Role::query()->updateOrCreate(
+                ['name' => $role['name']],
+                ['description' => $role['description']]
+            );
         }
     }
 }

@@ -1,23 +1,43 @@
-/.phpunit.cache
+# Dépendances
 /node_modules
+/vendor
+
+# Build front-end
 /public/build
 /public/hot
 /public/storage
+
+# Environnement (secrets) — seul .env.example est versionné
+.env
+.env.*
+!.env.example
+/auth.json
+
+# Laravel
 /storage/*.key
 /storage/pail
-/vendor
-.env
-.env.backup
-.env.production
-.phpactor.json
+/.phpunit.cache
 .phpunit.result.cache
+.phpactor.json
 Homestead.json
 Homestead.yaml
-npm-debug.log
-yarn-error.log
-/auth.json
+
+# Journaux
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs / IDE
 /.fleet
 /.idea
 /.nova
 /.vscode
 /.zed
+/.cursor
+/.claude
+*.swp

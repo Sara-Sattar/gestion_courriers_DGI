@@ -14,7 +14,9 @@ class UserSeeder extends Seeder
     {
         $roles = [
             'Admin' => Role::where('name', 'Admin')->first(),
-            'Direction Régionale' => Role::where('name', 'Direction Régionale')->first(),
+            'Accueil' => Role::where('name', 'Accueil')->first(),
+            'Traitement' => Role::where('name', 'Traitement')->first(),
+            'Consultation' => Role::where('name', 'Consultation')->first(),
             'Service' => Role::where('name', 'Service')->first(),
             'Brigade' => Role::where('name', 'Brigade')->first(),
             'Bureau' => Role::where('name', 'Bureau')->first(),
@@ -23,6 +25,14 @@ class UserSeeder extends Seeder
         ];
 
         $unites = Unite::all()->keyBy('code');
+
+        // Migration de l'ancien compte Directeur → Agent Accueil.
+        User::query()
+            ->where('email', 'dr@dgi.ma')
+            ->update([
+                'name' => 'Agent Accueil',
+                'email' => 'accueil@dgi.ma',
+            ]);
 
         $users = [
             [
@@ -33,10 +43,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
             ],
             [
-                'name' => 'Directeur Régional',
-                'email' => 'dr@dgi.ma',
-                'role' => 'Direction Régionale',
-                'unite_code' => 'DR001',
+                'name' => 'Agent Accueil',
+                'email' => 'accueil@dgi.ma',
+                'role' => 'Accueil',
+                'unite_code' => 'BO001',
                 'password' => 'password',
             ],
             [
@@ -58,6 +68,55 @@ class UserSeeder extends Seeder
                 'email' => 'bureau@dgi.ma',
                 'role' => 'Bureau',
                 'unite_code' => 'BO001',
+                'password' => 'password',
+            ],
+            [
+                'name' => 'Chef de Secteur Guéliz',
+                'email' => 'secteur.gueliz@dgi.ma',
+                'role' => 'Secteur',
+                'unite_code' => 'SECT001',
+                'password' => 'password',
+            ],
+            [
+                'name' => 'Chef Bureau Recouvrement',
+                'email' => 'recouvrement@dgi.ma',
+                'role' => 'Bureau',
+                'unite_code' => 'BUR003',
+                'password' => 'password',
+            ],
+            [
+                'name' => 'Agent Bureau 1',
+                'email' => 'agent.bureau1@dgi.ma',
+                'role' => 'Traitement',
+                'unite_code' => 'BO001',
+                'password' => 'password',
+            ],
+            [
+                'name' => 'Agent Bureau 2',
+                'email' => 'agent.bureau2@dgi.ma',
+                'role' => 'Traitement',
+                'unite_code' => 'BO001',
+                'password' => 'password',
+            ],
+            [
+                'name' => 'Agent Service 1',
+                'email' => 'agent.service1@dgi.ma',
+                'role' => 'Traitement',
+                'unite_code' => 'SERV002',
+                'password' => 'password',
+            ],
+            [
+                'name' => 'Agent Brigade 1',
+                'email' => 'agent.brigade1@dgi.ma',
+                'role' => 'Traitement',
+                'unite_code' => 'BRIG001',
+                'password' => 'password',
+            ],
+            [
+                'name' => 'Agent Section 1',
+                'email' => 'agent.section1@dgi.ma',
+                'role' => 'Traitement',
+                'unite_code' => 'SERV002',
                 'password' => 'password',
             ],
         ];

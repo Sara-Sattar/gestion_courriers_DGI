@@ -14,6 +14,7 @@ class CourrierHistorique extends Model
     protected $fillable = [
         'courrier_id',
         'user_id',
+        'pour_compte_de_id',
         'action',
         'commentaire',
     ];
@@ -33,5 +34,10 @@ class CourrierHistorique extends Model
     public function utilisateur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function pourCompteDe(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'pour_compte_de_id');
     }
 }

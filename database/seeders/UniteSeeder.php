@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\CategorieCourrier;
-use App\Models\TypeCourrier;
 use App\Models\Unite;
 use Illuminate\Database\Seeder;
 
@@ -29,6 +27,8 @@ class UniteSeeder extends Seeder
                 'type_unite' => 'Bureau',
                 'parent_id' => $dr->id,
                 'description' => 'Bureau d\'ordre central',
+                'ville' => 'Marrakech',
+                'est_bureau_ordre' => true,
                 'actif' => true,
             ]
         );

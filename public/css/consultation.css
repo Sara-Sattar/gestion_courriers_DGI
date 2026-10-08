@@ -1,0 +1,186 @@
+/* ── Page Statistiques ─────────────────────────────────────────── */
+:root {
+    --consultation-navy: #0d47a1;
+}
+
+.consultation-toolbar {
+    padding: 1rem 1.25rem;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+}
+
+.consultation-indicateurs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .consultation-indicateurs {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1200px) {
+    .consultation-indicateurs {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+}
+
+.consultation-ind {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 0.85rem 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-height: 100%;
+}
+
+.consultation-ind-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6c757d;
+}
+
+.consultation-ind-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0d47a1;
+    line-height: 1.15;
+}
+
+.consultation-ind-hint {
+    font-size: 0.72rem;
+    color: #868e96;
+}
+
+.consultation-comparaison {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.95rem 1.15rem;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+}
+
+.consultation-top-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 0.9rem 1rem;
+    background: #fff;
+}
+
+.consultation-top-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.875rem;
+    padding: 0.28rem 0;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+.consultation-top-row:last-child {
+    border-bottom: 0;
+}
+
+.consultation-axes {
+    border-bottom: 0;
+    gap: 0.15rem;
+}
+
+.consultation-axes .nav-link {
+    color: #6c757d;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 0.55rem 0.85rem;
+    font-weight: 500;
+}
+
+.consultation-axes .nav-link:hover {
+    color: var(--consultation-navy);
+}
+
+.consultation-axes .nav-link.active {
+    color: var(--consultation-navy);
+    background: transparent;
+    border-color: var(--consultation-navy);
+}
+
+.consultation-axes-secondary .nav-link {
+    font-size: 0.9rem;
+}
+
+.consultation-progress {
+    height: 0.45rem;
+    background: #f1f3f5;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.consultation-progress .progress-bar {
+    background-color: var(--consultation-navy);
+    border-radius: 999px;
+}
+
+.consultation-table thead th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6c757d;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.consultation-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.45rem;
+    min-height: 160px;
+    padding: 0.5rem 0.25rem 0;
+    overflow-x: auto;
+}
+
+.consultation-bars-item {
+    flex: 1 1 0;
+    min-width: 2.6rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.consultation-bars-col {
+    width: 100%;
+    max-width: 2.2rem;
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.consultation-bars-fill {
+    width: 100%;
+    background: linear-gradient(180deg, #1565c0 0%, #0d47a1 100%);
+    border-radius: 0.3rem 0.3rem 0.1rem 0.1rem;
+    min-height: 4px;
+}
+
+.consultation-bars-value {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.consultation-bars-label {
+    font-size: 0.65rem;
+    color: #868e96;
+    text-align: center;
+    line-height: 1.15;
+}

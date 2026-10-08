@@ -1,0 +1,91 @@
+/* ── Section Référentiels : sous-navigation et listes ──────────── */
+.referentiels-nav {
+    --dgi-navy: #0d47a1;
+    gap: 0.25rem;
+}
+
+.referentiels-nav .nav-link {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #495057;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 2rem;
+}
+
+.referentiels-nav .nav-link:hover {
+    color: var(--dgi-navy);
+    background-color: rgba(13, 71, 161, 0.06);
+}
+
+.referentiels-nav .nav-link.active {
+    color: #fff;
+    background-color: var(--dgi-navy);
+}
+
+/* Tableau à bords francs : les cellules extrêmes s'alignent sur les
+   autres blocs de la carte plutôt que de coller au bord. */
+.table-referentiel {
+    margin-bottom: 0;
+}
+
+.table-referentiel > thead > tr > th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.table-referentiel > :not(caption) > * > *:first-child {
+    padding-left: 1.5rem;
+}
+
+.table-referentiel > :not(caption) > * > *:last-child {
+    padding-right: 1.5rem;
+}
+
+.table-referentiel td {
+    vertical-align: middle;
+}
+
+.referentiel-libelle {
+    font-weight: 600;
+}
+
+.referentiel-precision {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.referentiel-compteur {
+    display: inline-block;
+    min-width: 2rem;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    color: #495057;
+    background-color: #eceff3;
+    border-radius: 1rem;
+}
+
+a.referentiel-compteur:hover {
+    color: #0d47a1;
+    background-color: rgba(13, 71, 161, 0.12);
+}
+
+.referentiel-vide {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--bs-secondary-color);
+}
+
+.referentiel-vide .bi {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    opacity: 0.35;
+}

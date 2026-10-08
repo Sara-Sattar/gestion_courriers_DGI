@@ -1,27 +1,154 @@
 @extends('layouts.app')
 
-@section('title', 'Détail du courrier')
+@section('title', $courrier->numero)
 
-@section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{ route('courriers.create') }}" class="text-decoration-none">Enregistrer un courrier</a></li>
-    <li class="breadcrumb-item active">Détail du courrier</li>
+@section('page-header')
+    <div class="col">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+            <h2 class="h3 mb-0 fw-bold">{{ $courrier->numero }}</h2>
+            <span class="badge bg-{{ $courrier->statut->badgeColor() }} fs-6">
+                <i class="bi {{ $courrier->statut->icon() }} me-1"></i>{{ $courrier->statut->label() }}
+            </span>
+        </div>
+        <p class="text-muted mb-0 small">
+            <i class="bi bi-calendar3 me-1"></i>Enregistré le {{ $courrier->date_depot->format('d/m/Y à H:i') }}
+            par {{ $courrier->utilisateur->name }}
+        </p>
+    </div>
+    <div class="col-auto">
+        <div class="d-flex flex-wrap gap-2">
+            @can('courriers.annuler_depot')
+                @if (in_array($courrier->statut, [\App\Enums\StatutCourrier::Depose, \App\Enums\StatutCourrier::Reaffecte], true))
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#annulerDepotModal">
+                        <i class="bi bi-x-circle me-1"></i>Annuler le dépôt
+                    </button>
+                @endif
+            @endcan
+            <a href="{{ route('courriers.recu', $courrier) }}" class="btn btn-outline-primary" target="_blank" id="lien-recu">
+                <i class="bi bi-printer me-1"></i>Imprimer le reçu
+            </a>
+            <a href="{{ route('courriers.recu.telecharger', $courrier) }}" class="btn btn-primary">
+                <i class="bi bi-download me-1"></i>Télécharger le reçu
+            </a>
+        </div>
+    </div>
 @endsection
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/suivi-dossier.css') }}">
+<style>
+    .detail-section {
+        padding-bottom: 1.25rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid var(--bs-border-color-translucent);
+    }
+
+    .detail-section:last-child {
+        padding-bottom: 0;
+        margin-bottom: 0;
+        border-bottom: none;
+    }
+
+    .detail-section-title {
+        color: var(--bs-secondary-color);
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    .detail-champ + .detail-champ {
+        margin-top: 0.75rem;
+    }
+
+    .detail-champ-label {
+        color: var(--bs-secondary-color);
+        display: block;
+        font-size: 0.75rem;
+        margin-bottom: 0.15rem;
+    }
+
+    .detail-champ-value {
+        font-weight: 600;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .detail-identifiants {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .detail-objet {
+        background-color: var(--bs-light);
+        border: 1px solid var(--bs-border-color-translucent);
+        border-radius: 0.5rem;
+        font-weight: 600;
+        line-height: 1.5;
+        padding: 0.85rem 1rem;
+    }
+
+    .detail-badge-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+    .detail-badge-list .badge {
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.4em 0.75em;
+    }
+
+    .detail-empty {
+        color: var(--bs-secondary-color);
+        font-size: 0.9rem;
+        padding: 1.5rem 1rem;
+        text-align: center;
+    }
+
+    .detail-empty i {
+        display: block;
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.45;
+    }
+
+    .contribuable-nom {
+        font-size: 1.05rem;
+        font-weight: 700;
+        line-height: 1.35;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 575.98px) {
+        .detail-identifiants {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-    <div>
-        <h3 class="h5 mb-1">{{ $courrier->numero }}</h3>
-        <div class="text-muted">Courrier enregistré le {{ $courrier->date_depot->format('d/m/Y à H:i') }}</div>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('courriers.recu', $courrier) }}" class="btn btn-outline-primary" target="_blank">
-            <i class="bi bi-file-earmark-pdf me-1"></i>Aperçu du reçu
-        </a>
-        <a href="{{ route('courriers.recu.telecharger', $courrier) }}" class="btn btn-primary">
-            <i class="bi bi-download me-1"></i>Télécharger le reçu
-        </a>
-    </div>
-</div>
+@php
+    $contribuable = $courrier->contribuable;
+    $identifiants = collect([
+        'IFU' => $contribuable->ifu,
+        'CIN' => $contribuable->cin,
+        'ICE' => $contribuable->ice,
+        'N° TP' => $contribuable->numero_tp,
+        'N° TH' => $contribuable->numero_th,
+    ])->filter(fn ($valeur) => filled($valeur));
+
+    $coordonnees = collect([
+        'Ville' => $contribuable->ville,
+        'Adresse' => $contribuable->adresse,
+        'Téléphone' => $contribuable->telephone,
+        'Email' => $contribuable->email,
+    ])->filter(fn ($valeur) => filled($valeur));
+@endphp
 
 <div class="row g-4">
     <div class="col-lg-4">
@@ -30,37 +157,33 @@
                 <h5 class="mb-0"><i class="bi bi-person-vcard me-2 text-primary"></i>Contribuable</h5>
             </div>
             <div class="card-body">
-                <dl class="row mb-0">
-                    <dt class="col-sm-5">Nom</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->nom_raison_sociale }}</dd>
+                <div class="contribuable-nom">{{ $contribuable->nom_raison_sociale }}</div>
 
-                    <dt class="col-sm-5">IFU</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->ifu ?: '-' }}</dd>
+                @if ($identifiants->isNotEmpty())
+                    <div class="detail-section">
+                        <div class="detail-section-title">Identifiants</div>
+                        <div class="detail-identifiants">
+                            @foreach ($identifiants as $libelle => $valeur)
+                                <div class="detail-champ">
+                                    <span class="detail-champ-label">{{ $libelle }}</span>
+                                    <span class="detail-champ-value">{{ $valeur }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
-                    <dt class="col-sm-5">CIN</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->cin ?: '-' }}</dd>
-
-                    <dt class="col-sm-5">ICE</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->ice ?: '-' }}</dd>
-
-                    <dt class="col-sm-5">TP</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->numero_tp ?: '-' }}</dd>
-
-                    <dt class="col-sm-5">TH</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->numero_th ?: '-' }}</dd>
-
-                    <dt class="col-sm-5">Ville</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->ville ?: '-' }}</dd>
-
-                    <dt class="col-sm-5">Adresse</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->adresse ?: '-' }}</dd>
-
-                    <dt class="col-sm-5">Téléphone</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->telephone ?: '-' }}</dd>
-
-                    <dt class="col-sm-5">Email</dt>
-                    <dd class="col-sm-7">{{ $courrier->contribuable->email ?: '-' }}</dd>
-                </dl>
+                @if ($coordonnees->isNotEmpty())
+                    <div class="detail-section">
+                        <div class="detail-section-title">Coordonnées</div>
+                        @foreach ($coordonnees as $libelle => $valeur)
+                            <div class="detail-champ">
+                                <span class="detail-champ-label">{{ $libelle }}</span>
+                                <span class="detail-champ-value">{{ $valeur }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -71,81 +194,112 @@
                 <h5 class="mb-0"><i class="bi bi-envelope-open me-2 text-primary"></i>Informations du courrier</h5>
             </div>
             <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="small text-muted">Catégorie</div>
-                        <div class="fw-semibold">{{ $courrier->categorie->nom }}</div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="small text-muted">Type de courrier</div>
-                        <div class="fw-semibold">{{ $courrier->typeCourrier->nom }}</div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="small text-muted">Objet</div>
-                        <div class="fw-semibold">{{ $courrier->objet }}</div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="small text-muted">Type d'unité</div>
-                        <div class="fw-semibold">{{ $courrier->uniteDestinataire->type_unite }}</div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="small text-muted">Unité destinataire</div>
-                        <div class="fw-semibold">{{ $courrier->uniteDestinataire->nom }}</div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="small text-muted">Code unité</div>
-                        <div class="fw-semibold">{{ $courrier->code_unite }}</div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="small text-muted">Statut</div>
-                        <div><span class="badge bg-success">{{ $courrier->statut->label() }}</span></div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="small text-muted">Enregistré par</div>
-                        <div class="fw-semibold">{{ $courrier->utilisateur->name }}</div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="small text-muted">Impôts concernés</div>
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach ($courrier->impots as $impot)
-                                <span class="badge rounded-pill text-bg-light border">{{ $impot->impot->label() }}</span>
-                            @endforeach
+                <div class="detail-section">
+                    <div class="detail-section-title">Classification</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="detail-champ">
+                                <span class="detail-champ-label">Catégorie</span>
+                                <span class="detail-champ-value">{{ $courrier->categorie->nom }}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="small text-muted">Années concernées</div>
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach ($courrier->annees->sortByDesc('annee') as $annee)
-                                <span class="badge rounded-pill text-bg-light border">{{ $annee->annee }}</span>
-                            @endforeach
+                        <div class="col-md-6">
+                            <div class="detail-champ">
+                                <span class="detail-champ-label">Type de courrier</span>
+                                <span class="detail-champ-value">{{ $courrier->typeCourrier->nom }}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="small text-muted">Remarque</div>
-                        <div class="fw-semibold">{{ $courrier->remarque ?: 'Aucune remarque.' }}</div>
                     </div>
                 </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">Objet</div>
+                    <div class="detail-objet">{{ $courrier->objet ?: '—' }}</div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">Affectation</div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="detail-champ">
+                                <span class="detail-champ-label">Type d'unité</span>
+                                <span class="detail-champ-value">{{ $courrier->uniteDestinataire->type_unite }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="detail-champ">
+                                <span class="detail-champ-label">Unité destinataire</span>
+                                <span class="detail-champ-value">{{ $courrier->uniteDestinataire->nom }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="detail-champ">
+                                <span class="detail-champ-label">Code unité</span>
+                                <span class="detail-champ-value"><code>{{ $courrier->code_unite }}</code></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">Périmètre fiscal</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="detail-champ">
+                                <span class="detail-champ-label">Impôts concernés</span>
+                                <div class="detail-badge-list">
+                                    @foreach ($courrier->impots as $impot)
+                                        <span class="badge rounded-pill text-bg-light border">{{ $impot->impot->label() }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-champ">
+                                <span class="detail-champ-label">Années concernées</span>
+                                <div class="detail-badge-list">
+                                    @foreach ($courrier->annees->sortByDesc('annee') as $annee)
+                                        <span class="badge rounded-pill text-bg-light border">{{ $annee->annee }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (filled($courrier->remarque))
+                    <div class="detail-section">
+                        <div class="detail-section-title">Remarque</div>
+                        <div class="detail-champ-value">{{ $courrier->remarque }}</div>
+                    </div>
+                @endif
             </div>
         </div>
 
         <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="bi bi-paperclip me-2 text-primary"></i>Pièces jointes</h5>
+                @if ($courrier->piecesJointes->isNotEmpty())
+                    <span class="badge text-bg-light border">{{ $courrier->piecesJointes->count() }}</span>
+                @endif
             </div>
             <div class="card-body">
                 @if ($courrier->piecesJointes->isEmpty())
-                    <div class="alert alert-light border mb-0">Aucune pièce jointe n'a été ajoutée à ce courrier.</div>
+                    <div class="detail-empty">
+                        <i class="bi bi-file-earmark"></i>
+                        Aucune pièce jointe n'a été ajoutée à ce courrier.
+                    </div>
                 @else
                     <div class="list-group list-group-flush">
                         @foreach ($courrier->piecesJointes as $piece)
                             <div class="list-group-item px-0">
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                                     <div>
                                         <div class="fw-semibold">
                                             <i class="bi {{ $piece->iconeBootstrap() }} me-2 text-primary"></i>{{ $piece->nom_original }}
                                         </div>
                                         <div class="small text-muted">
-                                            {{ strtoupper($piece->extension) }} | {{ number_format($piece->taille / 1024, 2, ',', ' ') }} Ko
+                                            {{ strtoupper($piece->extension) }} · {{ number_format($piece->taille / 1024, 2, ',', ' ') }} Ko
                                         </div>
                                     </div>
                                     <div class="d-flex gap-2">
@@ -166,35 +320,47 @@
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Historique</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Date</th>
-                                <th>Utilisateur</th>
-                                <th>Action</th>
-                                <th>Commentaire</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($courrier->historiques as $historique)
-                                <tr>
-                                    <td>{{ $historique->created_at->format('d/m/Y H:i') }}</td>
-                                    <td>{{ $historique->utilisateur->name }}</td>
-                                    <td>{{ $historique->action->label() }}</td>
-                                    <td>{{ $historique->commentaire ?: '-' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        @include('courriers._suivi-dossier', ['courrier' => $courrier])
+    </div>
+</div>
+
+@can('courriers.annuler_depot')
+    @if (in_array($courrier->statut, [\App\Enums\StatutCourrier::Depose, \App\Enums\StatutCourrier::Reaffecte], true))
+        <div class="modal fade" id="annulerDepotModal" tabindex="-1" aria-labelledby="annulerDepotModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="{{ route('courriers.annuler-depot', $courrier) }}">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="annulerDepotModalLabel">Annuler le dépôt</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="small text-muted">
+                                Le dossier <strong>{{ $courrier->numero }}</strong> sera marqué annulé (conservé en base).
+                            </p>
+                            <label for="motif_annulation" class="form-label">Motif <x-required /></label>
+                            <textarea name="motif" id="motif_annulation" rows="3" class="form-control" required minlength="5"
+                                      placeholder="Indiquez le motif d'annulation…"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Fermer</button>
+                            <button type="submit" class="btn btn-danger">Confirmer l'annulation</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    @endif
+@endcan
 @endsection
+
+@if (session('ouvrir_recu'))
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.open(@json(route('courriers.recu', $courrier)), '_blank');
+        });
+    </script>
+    @endpush
+@endif

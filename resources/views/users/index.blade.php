@@ -2,60 +2,48 @@
 
 @section('title', 'Gestion des utilisateurs')
 
-@section('breadcrumb')
-    <li class="breadcrumb-item active">Utilisateurs</li>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/referentiels.css') }}">
+<link rel="stylesheet" href="{{ asset('css/users-admin.css') }}">
+<link rel="stylesheet" href="{{ asset('css/liste-outils.css') }}">
+@endpush
+
+@section('page-header')
+    <div class="col">
+        <h2 class="h3 fw-bold mb-1">Gestion des utilisateurs</h2>
+        <p class="text-muted mb-0 small">
+            Comptes agents, profils et droits d’accès à l’application.
+        </p>
+    </div>
 @endsection
 
 @section('content')
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-people me-2 text-primary"></i>Liste des utilisateurs</h5>
-            <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
-                <i class="bi bi-plus me-1"></i>Nouvel utilisateur
-            </a>
+    <div class="card shadow-sm border-0">
+        <div
+            class="card-header bg-white d-flex flex-wrap gap-3 justify-content-between align-items-center px-4 py-3"
+            data-liste-recherche
+            data-url="{{ route('users.index') }}"
+            data-target="#table-wrapper"
+        >
+            <span class="fw-semibold fs-5"><i class="bi bi-people me-2"></i>Liste des utilisateurs</span>
+            <div class="d-flex flex-1 gap-3 align-items-center liste-outils-toolbar">
+                <x-barre-recherche
+                    placeholder="Rechercher un utilisateur…"
+                    :value="$recherche ?? ''"
+                    name="recherche"
+                />
+                <a href="{{ route('users.create') }}" class="btn btn-primary flex-shrink-0 ms-auto liste-new-btn">
+                    <i class="bi bi-plus-lg me-1"></i>Nouvel utilisateur
+                </a>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nom</th>
-                            <th>Email</th>
-                            <th>Rôle</th>
-                            <th>Unité</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($users as $user)
-                            <tr>
-                                <td>{{ $user->name }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>{{ $user->role?->name ?? '-' }}</td>
-                                <td>{{ $user->unite?->nom ?? '-' }}</td>
-                                <td class="d-flex gap-2">
-                                    <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-outline-info">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-outline-warning">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-4 d-flex justify-content-center">
-                {{ $users->links() }}
-            </div>
+
+        <div class="card-body p-0" id="table-wrapper">
+            @include('users._table', ['users' => $users, 'recherche' => $recherche ?? ''])
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/liste-recherche.js') }}"></script>
+@endpush

@@ -1,0 +1,113 @@
+/* Délégations — cohérent avec référentiels / navbar DGI */
+.espace-choix-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.espace-choix-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin: 0;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.espace-choix-item:hover,
+.espace-choix-item:has(input:checked) {
+    border-color: var(--bs-primary);
+    background-color: rgba(13, 110, 253, 0.04);
+}
+
+.espace-choix-item input {
+    margin-top: 0.25rem;
+}
+
+.bandeau-remplacement {
+    background: linear-gradient(90deg, #fff3cd 0%, #ffe8a3 100%);
+    border-bottom: 1px solid #ffecb5;
+    color: #664d03;
+    font-size: 0.9rem;
+    padding: 0.55rem 1.5rem;
+}
+
+.bandeau-remplacement strong {
+    font-weight: 600;
+}
+
+.nav-espace-actif {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+    line-height: 1.2;
+}
+
+.nav-espace-actif .espace-nom {
+    color: var(--bs-body-color);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+@media (max-width: 991.98px) {
+    .bandeau-remplacement {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* ── Barre outils liste délégations (même style que Accueil) ─── */
+.delegations-list-toolbar {
+    flex-grow: 2;
+}
+
+.delegations-search-wrap {
+    width: 500px;
+    max-width: 100%;
+    flex-shrink: 1;
+}
+
+.delegations-search-input {
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: box-shadow 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.delegations-search-input:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.delegations-statut-select {
+    width: 170px;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+.delegations-new-btn {
+    border-radius: 0.5rem;
+    white-space: nowrap;
+    font-size: 1rem;
+}
+
+@media (max-width: 991.98px) {
+    .delegations-list-toolbar {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .delegations-search-wrap {
+        width: 100%;
+    }
+
+    .delegations-statut-select {
+        flex: 1 1 auto;
+    }
+
+    .delegations-new-btn {
+        width: 100%;
+        margin-left: 0 !important;
+    }
+}

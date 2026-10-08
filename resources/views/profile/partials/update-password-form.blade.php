@@ -1,47 +1,127 @@
 <section>
-    <header>
-        <h2 class="fs-5 fw-medium mb-1">
-            {{ __('Update Password') }}
-        </h2>
-        <p class="text-muted small">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
-        </p>
-    </header>
+    <p class="text-muted small mb-4">
+        Utilisez un mot de passe long et sécurisé pour protéger votre compte.
+    </p>
 
-    <form method="post" action="{{ route('password.update') }}" class="mt-4">
+    <form method="post" action="{{ route('password.update') }}">
         @csrf
         @method('put')
 
-        <div class="mb-3">
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input id="update_password_current_password" name="current_password" type="password" autocomplete="current-password" />
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" />
+        <div class="row g-3">
+            <div class="col-12">
+                <label for="update_password_current_password" class="form-label fw-medium">Mot de passe actuel <x-required /></label>
+                <div class="profile-password-wrap">
+                    <input
+                        id="update_password_current_password"
+                        name="current_password"
+                        type="password"
+                        class="form-control profile-password-input @error('current_password', 'updatePassword') is-invalid @enderror"
+                        autocomplete="current-password"
+                    >
+                    <button
+                        type="button"
+                        class="profile-password-toggle"
+                        data-target="update_password_current_password"
+                        aria-label="Afficher le mot de passe actuel"
+                    >
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                </div>
+                @error('current_password', 'updatePassword')
+                    <div class="text-danger small mt-1">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-6">
+                <label for="update_password_password" class="form-label fw-medium">Nouveau mot de passe <x-required /></label>
+                <div class="profile-password-wrap">
+                    <input
+                        id="update_password_password"
+                        name="password"
+                        type="password"
+                        class="form-control profile-password-input @error('password', 'updatePassword') is-invalid @enderror"
+                        autocomplete="new-password"
+                    >
+                    <button
+                        type="button"
+                        class="profile-password-toggle"
+                        data-target="update_password_password"
+                        aria-label="Afficher le nouveau mot de passe"
+                    >
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                </div>
+                @error('password', 'updatePassword')
+                    <div class="text-danger small mt-1">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-6">
+                <label for="update_password_password_confirmation" class="form-label fw-medium">Confirmer le mot de passe <x-required /></label>
+                <div class="profile-password-wrap">
+                    <input
+                        id="update_password_password_confirmation"
+                        name="password_confirmation"
+                        type="password"
+                        class="form-control profile-password-input @error('password_confirmation', 'updatePassword') is-invalid @enderror"
+                        autocomplete="new-password"
+                    >
+                    <button
+                        type="button"
+                        class="profile-password-toggle"
+                        data-target="update_password_password_confirmation"
+                        aria-label="Afficher la confirmation du mot de passe"
+                    >
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                </div>
+                @error('password_confirmation', 'updatePassword')
+                    <div class="text-danger small mt-1">{{ $message }}</div>
+                @enderror
+            </div>
         </div>
 
-        <div class="mb-3">
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input id="update_password_password" name="password" type="password" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password')" />
-        </div>
-
-        <div class="mb-3">
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" />
-        </div>
-
-        <div class="d-flex align-items-center gap-3">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
+        <div class="d-flex align-items-center gap-3 mt-4 pt-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-shield-lock me-1"></i>Mettre à jour le mot de passe
+            </button>
             @if (session('status') === 'password-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-muted small mb-0"
-                >{{ __('Saved.') }}</p>
+                <span class="text-success small fw-medium">
+                    <i class="bi bi-check-circle me-1"></i>Mot de passe mis à jour
+                </span>
             @endif
         </div>
     </form>
 </section>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function bindPasswordToggle(inputId, btnSelector) {
+        var input = document.getElementById(inputId);
+        var btn = document.querySelector(btnSelector);
+        if (!input || !btn) {
+            return;
+        }
+        var icon = btn.querySelector('.bi');
+        var showLabel = btn.getAttribute('aria-label');
+        var hideLabel = showLabel.replace('Afficher', 'Masquer');
+
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            var show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            if (icon) {
+                icon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+            }
+            btn.setAttribute('aria-label', show ? hideLabel : showLabel);
+            input.focus();
+        });
+    }
+
+    bindPasswordToggle('update_password_current_password', '[data-target="update_password_current_password"]');
+    bindPasswordToggle('update_password_password', '[data-target="update_password_password"]');
+    bindPasswordToggle('update_password_password_confirmation', '[data-target="update_password_password_confirmation"]');
+});
+</script>
+@endpush

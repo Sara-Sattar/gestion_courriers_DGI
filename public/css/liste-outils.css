@@ -1,0 +1,112 @@
+/* ── Barre d’outils de liste (même style que Accueil / courriers) ─ */
+.liste-outils-toolbar {
+    flex-grow: 2;
+}
+
+.liste-search-wrap {
+    width: 500px;
+    max-width: 100%;
+    flex-shrink: 1;
+}
+
+.liste-search-input {
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: box-shadow 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.liste-search-input:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.liste-select {
+    width: 170px;
+    max-width: 100%;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.liste-select-lg {
+    width: 200px;
+}
+
+.liste-new-btn {
+    border-radius: 0.5rem;
+    white-space: nowrap;
+    font-size: 1rem;
+}
+
+/* Champ date / année avec bouton effacer */
+.liste-filtre-effacable {
+    position: relative;
+    flex-shrink: 0;
+    width: 170px;
+    max-width: 100%;
+}
+
+.liste-filtre-effacable:has(.liste-select-lg) {
+    width: 200px;
+}
+
+.liste-filtre-effacable .liste-select {
+    width: 100%;
+    padding-right: 2.25rem;
+}
+
+.liste-filtre-clear {
+    position: absolute;
+    top: 50%;
+    right: 0.45rem;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: #6c757d;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    z-index: 2;
+}
+
+.liste-filtre-clear:hover {
+    color: #212529;
+    background: rgba(108, 117, 125, 0.12);
+}
+
+.liste-filtre-clear[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 991.98px) {
+    .liste-outils-toolbar {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .liste-search-wrap {
+        width: 100%;
+    }
+
+    .liste-select {
+        flex: 1 1 auto;
+        width: auto;
+    }
+
+    .liste-filtre-effacable,
+    .liste-filtre-effacable:has(.liste-select-lg) {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 9rem;
+    }
+
+    .liste-new-btn {
+        width: 100%;
+        margin-left: 0 !important;
+    }
+}

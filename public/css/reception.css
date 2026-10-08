@@ -1,0 +1,65 @@
+/* ── Page Réception — cohérente avec le tableau de bord ─────────── */
+.reception-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .reception-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.reception-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.reception-table thead th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.reception-table td {
+    vertical-align: middle;
+}
+
+.reception-objet {
+    font-weight: 500;
+    max-width: 16rem;
+}
+
+.reception-precision {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.reception-vide {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--bs-secondary-color);
+}
+
+.reception-vide .bi {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
+    opacity: 0.35;
+}
+
+.reception-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: flex-end;
+}

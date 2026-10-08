@@ -7,6 +7,7 @@ enum ActionType: string
     case Reception = 'reception';
     case AnnulationReception = 'annulation_reception';
     case Reaffectation = 'reaffectation';
+    case RefusReaffectation = 'refus_reaffectation';
 
     public function label(): string
     {
@@ -14,6 +15,7 @@ enum ActionType: string
             self::Reception => 'Réception',
             self::AnnulationReception => 'Annulation',
             self::Reaffectation => 'Réaffectation',
+            self::RefusReaffectation => 'Refus de réaffectation',
         };
     }
 }

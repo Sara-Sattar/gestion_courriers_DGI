@@ -15,12 +15,14 @@ class CategorieCourrier extends Model
     protected $fillable = [
         'nom',
         'description',
+        'necessite_reponse',
         'actif',
     ];
 
     protected function casts(): array
     {
         return [
+            'necessite_reponse' => 'boolean',
             'actif' => 'boolean',
         ];
     }

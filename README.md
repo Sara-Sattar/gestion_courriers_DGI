@@ -1,66 +1,148 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Gestion DGI2 — Gestion du courrier
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Application web de gestion du courrier entrant pour une Direction Régionale des Impôts (DGI),
+réalisée dans le cadre d'un stage. Elle suit chaque courrier déposé par un contribuable, de son
+enregistrement au bureau d'ordre jusqu'à la délivrance de la réponse, avec une traçabilité
+complète des actions.
 
-## About Laravel
+## Fonctionnalités
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Enregistrement** des courriers au guichet (saisie manuelle ou import Excel), avec numéro unique
+  au format `AAAA-NNNNNN-CODE` (ex. `2026-000007-BO001`) et reçu de dépôt PDF.
+- **Catégories et types de courrier** ; chaque catégorie indique si le courrier nécessite une
+  réponse (sinon il est archivé dès le dépôt).
+- **Réception** par les agents de l'unité destinataire : confirmation, refus (retour au bureau
+  d'ordre) ou refus de réaffectation (retour à l'unité précédente).
+- **Réaffectation** vers une autre unité, possible uniquement après confirmation de la réception
+  et par l'agent responsable du courrier.
+- **Traitement** : favorable, rejet ou suspension (avec reprise).
+- **Délivrance** des documents (intéressé, mandataire, envoi postal) et clôture du dossier.
+- **Délégations** : remplacement temporaire d'un agent absent, avec traçabilité « pour le compte de ».
+- **Statistiques** et exports (PDF, Excel/CSV).
+- **Administration** : utilisateurs, profils et permissions, unités, catégories et types de courrier.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Profils
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Profil | Rôle principal |
+|---|---|
+| Admin | Utilisateurs, permissions et référentiels |
+| Accueil | Enregistrement, délivrance, statistiques |
+| Traitement | Réception, réaffectation et traitement des courriers de son unité |
+| Service, Brigade, Bureau, Section, Secteur | Responsables d'unité : comme Traitement + gestion des délégations |
+| Consultation | Statistiques en lecture seule |
 
-## Learning Laravel
+Les droits de chaque profil sont définis dans `config/permissions.php` et peuvent être ajustés
+par utilisateur depuis l'administration.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Technologies
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- PHP 8.2+, [Laravel 12](https://laravel.com)
+- MySQL / MariaDB
+- Blade, Bootstrap 5, Bootstrap Icons, Alpine.js (Vite)
+- [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf) (PDF),
+  [maatwebsite/excel](https://laravel-excel.com) (import / export Excel)
+- PHPUnit (tests sur SQLite en mémoire)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Prérequis
 
-## Laravel Sponsors
+- PHP ≥ 8.2 avec les extensions `pdo_mysql`, `mbstring`, `gd`, `zip`, `xml`
+- Composer 2
+- Node.js ≥ 18 et npm
+- MySQL 8 ou MariaDB 10.4+ (par exemple via [XAMPP](https://www.apachefriends.org))
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Installation
 
-### Premium Partners
+```bash
+git clone https://github.com/<votre-compte>/gestion_courrier.git
+cd gestion_courrier
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+composer install
+npm install
+npm run build
 
-## Contributing
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Adapter ensuite la section base de données de `.env` si nécessaire (par défaut : base
+`gestion_dgi2`, utilisateur `root` sans mot de passe).
 
-## Code of Conduct
+### Base de données
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Créer la base puis lancer les migrations et les données de démonstration :
 
-## Security Vulnerabilities
+```bash
+mysql -u root -e "CREATE DATABASE gestion_dgi2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+php artisan migrate --seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Alternative sans ligne de commande Laravel : importer `database/sql/gestion_dgi2.sql` dans
+phpMyAdmin (voir [database/sql/README.md](database/sql/README.md)).
 
-## License
+## Lancement
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan serve
+```
+
+L'application est disponible sur <http://127.0.0.1:8000>.
+
+Les délégations planifiées sont activées et clôturées automatiquement par la commande
+`delegations:expirer`, programmée chaque jour. En local, lancer le planificateur avec :
+
+```bash
+php artisan schedule:work
+```
+
+## Comptes de démonstration
+
+Tous les comptes créés par les seeders utilisent le mot de passe **`password`**.
+
+| Compte | Profil | Unité |
+|---|---|---|
+| `admin@dgi.ma` | Admin | DR001 |
+| `accueil@dgi.ma` | Accueil | BO001 (bureau d'ordre) |
+| `agent.bureau1@dgi.ma`, `agent.bureau2@dgi.ma` | Traitement | BO001 |
+| `agent.service1@dgi.ma`, `agent.section1@dgi.ma` | Traitement | SERV002 |
+| `agent.brigade1@dgi.ma` | Traitement | BRIG001 |
+| `bureau@dgi.ma` | Bureau (chef) | BO001 |
+| `service.it@dgi.ma` | Service (chef) | SERV002 |
+| `brigade@dgi.ma` | Brigade (chef) | BRIG001 |
+| `secteur.gueliz@dgi.ma` | Secteur (chef) | SECT001 |
+| `recouvrement@dgi.ma` | Bureau (chef) | BUR003 |
+
+> Ces comptes sont destinés à la démonstration uniquement : changez les mots de passe avant tout
+> déploiement réel. Les contribuables de démonstration sont fictifs.
+
+## Tests
+
+```bash
+php artisan test
+```
+
+Les tests utilisent une base SQLite en mémoire (`phpunit.xml`) et ne modifient jamais la base
+MySQL de développement.
+
+## Structure du projet
+
+```
+app/
+├── Console/Commands/   Commandes artisan (expiration des délégations, génération de rapports PDF)
+├── Enums/              Statuts, actions d'historique, types d'impôt…
+├── Exports/ Imports/   Import / export Excel
+├── Http/               Contrôleurs et Form Requests (validation)
+├── Models/             Modèles Eloquent
+├── Policies/           Autorisations (courriers, utilisateurs)
+└── Services/           Logique métier (enregistrement, réception, traitement, délivrance, délégation…)
+config/
+├── dgi.php             Libellés et logos de la direction
+└── permissions.php     Catalogue des permissions et droits par profil
+database/
+├── migrations/         Structure de la base
+├── seeders/            Données de démonstration
+└── sql/                Export SQL complet (installation via phpMyAdmin)
+resources/views/        Vues Blade
+public/css, public/js   Styles et scripts propres à l'application
+tests/Feature/          Tests fonctionnels du circuit courrier
+Rapport/                Rapport de stage (PDF)
+```

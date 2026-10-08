@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TypeContribuable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +13,7 @@ class Contribuable extends Model
 
     protected $fillable = [
         'nom_raison_sociale',
+        'type_contribuable',
         'ifu',
         'cin',
         'ice',
@@ -22,6 +24,13 @@ class Contribuable extends Model
         'telephone',
         'email',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'type_contribuable' => TypeContribuable::class,
+        ];
+    }
 
     public function courriers(): HasMany
     {

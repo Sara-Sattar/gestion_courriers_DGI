@@ -1,87 +1,43 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier l\'utilisateur')
+@section('title', 'Modifier — '.$user->name)
 
-@section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{ route('users.index') }}">Utilisateurs</a></li>
-    <li class="breadcrumb-item active">Modifier</li>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/formulaires.css') }}">
+<link rel="stylesheet" href="{{ asset('css/permissions.css') }}">
+<link rel="stylesheet" href="{{ asset('css/users-admin.css') }}">
+@endpush
+
+@section('page-header')
+    <div class="col">
+        <x-lien-retour :href="route('users.index')">Utilisateurs</x-lien-retour>
+        <h2 class="h3 fw-bold mb-1">Modifier l’utilisateur</h2>
+        <p class="text-muted mb-0 small">
+            {{ $user->name }} · {{ $user->email }}
+        </p>
+    </div>
 @endsection
 
 @section('content')
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white">
-            <h5 class="mb-0"><i class="bi bi-pencil me-2 text-primary"></i>Modifier l'utilisateur</h5>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('users.update', $user) }}" method="POST">
-                @csrf
-                @method('PUT')
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form action="{{ route('users.update', $user) }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Nom</label>
-                        <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" required>
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" required>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
+                    @include('users._form')
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="password" class="form-label">Nouveau mot de passe (optionnel)</label>
-                        <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror">
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 pt-3 border-top">
+                        <a href="{{ route('users.index') }}" class="btn btn-light border">Annuler</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Enregistrer les modifications
+                        </button>
                     </div>
-                    <div class="col-md-6">
-                        <label for="password_confirmation" class="form-label">Confirmer le mot de passe</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" class="form-control">
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="role_id" class="form-label">Rôle</label>
-                        <select id="role_id" name="role_id" class="form-select @error('role_id') is-invalid @enderror" required>
-                            <option value="">Sélectionner un rôle</option>
-                            @foreach ($roles as $role)
-                                <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('role_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="unite_id" class="form-label">Unité</label>
-                        <select id="unite_id" name="unite_id" class="form-select @error('unite_id') is-invalid @enderror" required>
-                            <option value="">Sélectionner une unité</option>
-                            @foreach ($unites as $unite)
-                                <option value="{{ $unite->id }}" {{ old('unite_id', $user->unite_id) == $unite->id ? 'selected' : '' }}>{{ $unite->nom }} ({{ $unite->code }})</option>
-                            @endforeach
-                        </select>
-                        @error('unite_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-end gap-2">
-                    <a href="{{ route('users.index') }}" class="btn btn-light border">Annuler</a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save me-1"></i>Mettre à jour
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
+</div>
 @endsection

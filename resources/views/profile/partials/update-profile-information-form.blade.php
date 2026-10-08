@@ -1,61 +1,101 @@
 <section>
-    <header>
-        <h2 class="fs-5 fw-medium mb-1">
-            {{ __('Profile Information') }}
-        </h2>
-        <p class="text-muted small">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
+    <p class="text-muted small mb-4">
+        Modifiez votre identité et votre adresse e-mail. Le profil et l'unité sont gérés par l'administrateur.
+    </p>
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-4">
+    <form method="post" action="{{ route('profile.update') }}">
         @csrf
         @method('patch')
 
-        <div class="mb-3">
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" />
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="ppr" class="form-label fw-medium">PPR</label>
+                <input
+                    id="ppr"
+                    name="ppr"
+                    type="text"
+                    class="form-control @error('ppr') is-invalid @enderror"
+                    value="{{ old('ppr', $user->ppr) }}"
+                    autocomplete="off"
+                >
+                @error('ppr')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4">
+                <label for="name" class="form-label fw-medium">Nom <x-required /></label>
+                <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    class="form-control @error('name') is-invalid @enderror"
+                    value="{{ old('name', $user->name) }}"
+                    required
+                    autofocus
+                    autocomplete="family-name"
+                >
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4">
+                <label for="prenom" class="form-label fw-medium">Prénom</label>
+                <input
+                    id="prenom"
+                    name="prenom"
+                    type="text"
+                    class="form-control @error('prenom') is-invalid @enderror"
+                    value="{{ old('prenom', $user->prenom) }}"
+                    autocomplete="given-name"
+                >
+                @error('prenom')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-6">
+                <label for="email" class="form-label fw-medium">Adresse e-mail <x-required /></label>
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    class="form-control @error('email') is-invalid @enderror"
+                    value="{{ old('email', $user->email) }}"
+                    required
+                    autocomplete="username"
+                >
+                @error('email')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
         </div>
 
-        <div class="mb-3">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" />
-
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div class="mt-2">
-                    <p class="text-dark small mb-1">
-                        {{ __('Your email address is unverified.') }}
-                        <button form="send-verification" class="btn btn-link text-muted small text-decoration-underline p-0">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="text-success small fw-medium">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
-                </div>
+        @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+            <div class="alert alert-warning mt-3 mb-0 py-2 small">
+                Votre adresse e-mail n'est pas vérifiée.
+                <button form="send-verification" class="btn btn-link btn-sm p-0 align-baseline">
+                    Renvoyer l'e-mail de vérification
+                </button>
+            </div>
+            @if (session('status') === 'verification-link-sent')
+                <p class="text-success small mt-2 mb-0">Un nouveau lien de vérification a été envoyé.</p>
             @endif
-        </div>
+        @endif
 
-        <div class="d-flex align-items-center gap-3">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
+        <div class="d-flex align-items-center gap-3 mt-4 pt-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-1"></i>Enregistrer
+            </button>
             @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-muted small mb-0"
-                >{{ __('Saved.') }}</p>
+                <span class="text-success small fw-medium">
+                    <i class="bi bi-check-circle me-1"></i>Modifications enregistrées
+                </span>
             @endif
         </div>
     </form>

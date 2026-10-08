@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Courrier;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class CourrierPolicy
 {
@@ -24,12 +23,25 @@ class CourrierPolicy
         if ($user->isAdmin()) {
             return true;
         }
-        
+
+        // L'agent qui a enregistré le courrier peut toujours consulter le dossier / reçu.
+        if ($courrier->user_id === $user->id) {
+            return true;
+        }
+
+        // L'agent (ou le sujet en délégation) qui a traité le dossier conserve l'accès
+        // après retour à l'Accueil (historique de mes traitements).
+        $sujetId = app(\App\Services\DelegationContext::class)->sujet()?->id ?? $user->id;
+        if ($courrier->traite_par_id !== null
+            && in_array($courrier->traite_par_id, [$user->id, $sujetId], true)) {
+            return true;
+        }
+
         $userUnite = $user->unite;
         if (!$userUnite) {
             return false;
         }
-        
+
         $hierarchyIds = $userUnite->hierarchy_ids;
         return in_array($courrier->unite_actuelle_id, $hierarchyIds);
     }
@@ -39,7 +51,7 @@ class CourrierPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role && $user->role->name === 'Direction Régionale';
+        return $user->hasPermission('courriers.creer');
     }
 
     /**

@@ -14,6 +14,7 @@ class HistoriqueAffectation extends Model
     protected $fillable = [
         'courrier_id',
         'user_id',
+        'pour_compte_de_id',
         'unite_source_id',
         'unite_destination_id',
         'ancien_responsable_id',
@@ -35,6 +36,11 @@ class HistoriqueAffectation extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function pourCompteDe(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'pour_compte_de_id');
     }
 
     public function uniteSource(): BelongsTo

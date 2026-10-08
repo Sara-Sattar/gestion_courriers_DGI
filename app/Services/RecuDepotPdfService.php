@@ -22,12 +22,28 @@ class RecuDepotPdfService
 
         return Pdf::loadView('courriers.pdf.recu-depot', [
             'courrier' => $courrier,
-            'impots' => $courrier->impots->pluck('impot')->map->value->implode(' '),
-            'annees' => $courrier->annees->sortByDesc('annee')->pluck('annee')->implode(' '),
+            'logo' => $this->logoEncode(),
+            'impots' => $courrier->impots->pluck('impot')->map->value->all(),
+            'annees' => $courrier->annees->sortByDesc('annee')->pluck('annee')->all(),
         ])
             ->setPaper('a4', 'portrait')
             ->setOption('isHtml5ParserEnabled', true)
             ->setOption('isRemoteEnabled', true);
+    }
+
+    /**
+     * DomPDF ne suit pas les URL de l'application : le logo est embarqué
+     * directement dans le document.
+     */
+    private function logoEncode(): ?string
+    {
+        $chemin = public_path(config('dgi.logo_navbar'));
+
+        if (! is_file($chemin)) {
+            return null;
+        }
+
+        return 'data:image/png;base64,'.base64_encode((string) file_get_contents($chemin));
     }
 
     public function telecharger(Courrier $courrier): Response
